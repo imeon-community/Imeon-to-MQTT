@@ -11,4 +11,10 @@ needed and shipped them to MQTT.
 - http://A.B.C.D/data-lithium
 
 For the one using Home assistant, configuration files are in the repo.
+
+Then just run it with a recurring crontab like :
+*/5    * * * *   /usr/bin/python /usr/local/python/imeon-stats.py >/dev/null 2>&1
+
+(provided as an exemple in the repo as well)
+
 Have fun.
