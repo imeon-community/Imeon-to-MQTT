@@ -10,11 +10,13 @@ needed and shipped them to MQTT.
 - http://A.B.C.D/battery-status
 - http://A.B.C.D/data-lithium
 
-For the one using Home assistant, configuration files are in the repo.
-
 Then just run it with a recurring crontab like :
 */5    * * * *   /usr/bin/python /usr/local/python/imeon-stats.py >/dev/null 2>&1
-
 (provided as an exemple in the repo as well)
 
 Have fun.
+
+PS: For the one using Home assistant, configuration files are in the repo, 
+    to create dashboards like those:
+
+![imeon solar dasboard for home assistant exemple](https://github.com/imeon-community/Imeon-to-MQTT/blob/main/Solar%20supervision.jpg)
