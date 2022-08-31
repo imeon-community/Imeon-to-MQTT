@@ -1,4 +1,4 @@
-# Imeon-to-MQTT
+# Imeon-to-MQTT (for smart automation systems like Home Assistant)
 A python script to extract values from the inverter and inject them in an MQTT server. Typical use case for Home assistant or Jeedom.
 
 I wanted to extract values from the Imeon and add them to my Home Assistant env.
