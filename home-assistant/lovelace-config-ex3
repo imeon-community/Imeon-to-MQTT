@@ -1,0 +1,151 @@
+cards:
+  - type: custom:apexcharts-card
+    graph_span: 36h
+    update_interval: 10min
+    header:
+      show: true
+      title: Batteries
+      show_states: true
+      colorize_states: true
+    apex_config:
+      legend:
+        show: false
+      dataLabels:
+        enabled: false
+      tooltip:
+        x:
+          format: ddd dd MMM
+      yaxis:
+        - id: first
+          show: true
+          forecNiceScale: true
+          decimalsInFloat: 1
+          opposite: true
+          min: 0
+          max: 100
+        - id: second
+          show: true
+          forecNiceScale: true
+          decimalsInFloat: 1
+          min: -65
+          max: 65
+    series:
+      - entity: sensor.imeon_battery_charge
+        name: charge level
+        yaxis_id: first
+        type: area
+        opacity: 0.4
+        stroke_width: 1
+        unit: '%'
+        color: cyan
+        group_by:
+          func: last
+          duration: 10min
+        show:
+          datalabels: false
+      - entity: sensor.imeon_battery_temperature
+        name: Temperature
+        yaxis_id: first
+        type: line
+        opacity: 1
+        stroke_width: 1
+        color: yellow
+        unit: °C
+        group_by:
+          func: last
+          duration: 10min
+        show:
+          datalabels: false
+      - entity: sensor.imeon_battery_current
+        name: Current
+        yaxis_id: second
+        type: area
+        opacity: 0.7
+        stroke_width: 1
+        color: orange
+        unit: A
+        group_by:
+          func: last
+          duration: 10min
+        show:
+          datalabels: false
+  - type: custom:apexcharts-card
+    graph_span: 36h
+    experimental:
+      color_threshold: true
+    apex_config:
+      legend:
+        show: false
+      dataLabels:
+        enabled: false
+      chart:
+        zoom:
+          enabled: true
+        toolbar:
+          show: false
+          tools:
+            zoom: false
+            zoomin: false
+            zoomout: false
+            pan: false
+            reset: false
+    header:
+      show: true
+      title: Solar production
+      show_states: true
+      colorize_states: true
+    yaxis:
+      - id: first
+        decimals: 1
+        min: 0
+        max: 30
+        apex_config:
+          tickAmount: 4
+      - id: second
+        opposite: true
+        min: 0
+        max: 7.5
+        decimals: 1
+        apex_config:
+          tickAmount: 4
+      - id: third
+        min: 0
+        max: 1
+        apex_config:
+          tickAmount: 0
+        show: false
+    series:
+      - entity: sensor.net_energy_producer
+        name: Energy export
+        yaxis_id: second
+        type: line
+        stroke_width: 0
+      - entity: sensor.solar_intensity
+        name: Intensity
+        yaxis_id: second
+        type: line
+        stroke_width: 0
+      - entity: sensor.solar_spot_production_filtered
+        name: Spot prod
+        group_by:
+          func: avg
+          duration: 10min
+        yaxis_id: second
+        unit: KWh
+        type: area
+        opacity: 1
+        stroke_width: 1
+        color_threshold:
+          - value: 0
+            color: lightblue
+          - value: 1
+            color: cyan
+          - value: 2
+            color: blue
+          - value: 3
+            color: purple
+          - value: 4.5
+            color: orange
+          - value: 6
+            color: red
+type: vertical-stack
