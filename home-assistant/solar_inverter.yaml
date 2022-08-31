@@ -1,0 +1,82 @@
+#------------------------------------------------------------------------------
+#
+# Imeon HTTP monitoring
+#
+#------------------------------------------------------------------------------
+- sensor:
+    - name: imeon_battery_status
+      state: '{{ state_attr("sensor.imeon","Battery_status") | string }}'
+    - name: imeon_battery_activity
+      state: '{{ state_attr("sensor.imeon","Battery_activity") | string }}'
+    - name: imeon_battery_current
+      state: '{{ state_attr("sensor.imeon","Battery_current") | float }}'
+      unit_of_measurement: A
+    - name: imeon_battery_tension
+      state: '{{ state_attr("sensor.imeon","Battery_tension") | float }}'
+      unit_of_measurement: V
+    - name: imeon_battery_temperature
+      state: '{{ state_attr("sensor.imeon","Battery_temperature") | float }}'
+      unit_of_measurement: "°C"
+    - name: imeon_battery_charge
+      state: '{{ state_attr("sensor.imeon","Battery_charge") | float }}'
+      unit_of_measurement: "%"
+    - name: imeon_battery_error
+      state: '{{ state_attr("sensor.imeon","Battery_error") | string }}'
+    - name: imeon_battery_warning
+      state: '{{ state_attr("sensor.imeon","Battery_warning") | string }}'
+    - name: imeon_grid_state
+      state: '{{ state_attr("sensor.imeon","Grid_state") | float }}'
+      unit_of_measurement: W
+    - name: imeon_meter_state
+      state: '{{ state_attr("sensor.imeon","Meter_state") | float }}'
+      unit_of_measurement: W
+    - name: imeon_pv_state
+      state: '{{ state_attr("sensor.imeon","PV_state") | float }}'
+      unit_of_measurement: W
+    - name: imeon_inverter_state
+      state: '{{ state_attr("sensor.imeon","Inverter_state") | string }}'
+    - name: imeon_timeline_message
+      state: '{{ state_attr("sensor.imeon","State_timeline") | string }}'
+    - name: net_energy_producer
+      state: '{{ iif((states("sensor.imeon_meter_state") | int < 0), 1, 0) }}'
+    - name: imeon_charging_battery
+      state: '{{ iif((states("sensor.imeon_battery_current") | float > 0), true, false) }}'
+    - name: panel_to_battery_amps
+      state: '{{ iif((states("sensor.imeon_battery_current") | float > 0), states("sensor.imeon_battery_current") | float | round(0), 0) }}'
+      device_class: power
+      unit_of_measurement: A
+    - name: panel_to_battery_watts
+      state: '{{ iif((states("sensor.imeon_battery_current") | float > 0), (states("sensor.imeon_battery_current") | float * states("sensor.imeon_battery_tension") | float) | round(0) - 89, 0) }}'
+      device_class: power
+      unit_of_measurement: W
+    - name: battery_to_house_amps
+      state: '{{ iif((states("sensor.imeon_battery_current") | float < 0), states("sensor.imeon_battery_current") | float * -1 | round(0), 0) }}'
+      device_class: power
+      unit_of_measurement: A
+    - name: house_entity2
+      state: '{{ states("sensor.imeon_grid_state") | float * -1 | round(0) }}'
+      device_class: power
+      unit_of_measurement: W
+    - name: PV_production
+      state: '{{ states("sensor.imeon_pv_state") | round(0) }}'
+      device_class: power
+      unit_of_measurement: W
+    - name: grid_to_house
+      state: '{{ states("sensor.imeon_meter_state") | float | round(0) }}'
+      device_class: power
+      unit_of_measurement: W
+    - name: imeon_power_to_battery # PV wattage sent to battery
+      state: >
+        {% set x = iif((states("sensor.imeon_battery_current") in ("0.0", "0", "unknown", "unavailable")), 0 | int, (states("sensor.imeon_battery_current") | float * states("sensor.imeon_battery_tension") | float) | round(0) -93) %}
+        {{ iif(x > 0, x | float | round(1), 0) }}
+      device_class: power
+      unit_of_measurement: W
+    - name: imeon_power_from_battery # drawn from battery
+      state: '{{ iif((states("sensor.imeon_battery_current") | float < 0), states("sensor.imeon_battery_current") | float | round(0) * -1 * states("sensor.imeon_battery_tension") | float, 0) }}'
+      device_class: power
+      unit_of_measurement: W
+    - name: battery_to_house_watts
+      state: '{{ iif((states("sensor.imeon_battery_current") | float < 0), states("sensor.imeon_battery_current") | float | round(0) * states("sensor.imeon_battery_tension") | float, 0) }}'
+      device_class: power
+      unit_of_measurement: W
+ 
