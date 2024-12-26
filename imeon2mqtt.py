@@ -1,24 +1,30 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import requests
 import requests.exceptions
 import json
 import time
+import os
 from paho.mqtt import client as mqtt_client
 
-LOGIN_URL       = "http://[insert your Imeon's IP here]/login"
-DATA_URL1       = "http://[insert your Imeon's IP here]/battery-status"
-DATA_URL2       = "http://[insert your Imeon's IP here]/imeon-status"
-DATA_URL3       = "http://[insert your Imeon's IP here]/data-lithium"
+imeonip         = os.getenv('IMEONIP') or '192.168.9.12'
+mqttbrokerip    = os.getenv('MQTTBROKERIP') or '127.0.0.1'
+mqttbrokeruser  = os.getenv('MQTTBROKERUSER') or 'mqtt'
+mqttbrokerpass  = os.getenv('MQTTBROKERPASS') or 'mqtt'
+
+LOGIN_URL       = f'http://{imeonip}/login'
+DATA_URL1       = f'http://{imeonip}/battery-status'
+DATA_URL2       = f'http://{imeonip}/imeon-status'
+DATA_URL3       = f'http://{imeonip}/data-lithium'
 EMAIL           = "installer@local" # default Imeon login
 PASSWORD        = "Installer_P4SS"  # default Imeon pass
-broker          = '[insert your MQTT Broker's IP here]'
+broker          = mqttbrokerip
 port            = 1883
 sensor_topic    = "homeassistant/Imeon/sensor" # or wherever else you want to send it, will work oob with the provided home assitant config
 status_topic    = "homeassistant/Imeon/status" # or wherever else you want to send it, will work oob with the provided home assitant config
 client_id       = "Imeon"
-username        = "[yourusername]"
-password        = "[yourpassword]"
+username        = mqttbrokeruser
+password        = mqttbrokerpass
 debug           = False # True will display the output on your tty
 payload         = {}
 
@@ -110,7 +116,7 @@ def poll_imeon_data():
 
 def run():
     global payload
-    
+
     client = connect_mqtt()
     client.loop_start()
     client.will_set(status_topic, payload="offline", qos=0, retain=False)
